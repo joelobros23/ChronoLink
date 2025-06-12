@@ -1,13 +1,34 @@
-<!DOCTYPE html>
-<html lang='en'>
-<head>
-	<meta charset='UTF-8'>
-	<meta name='viewport' content='width=device-width, initial-scale=1.0'>
-	<title>ChronoLink</title>
-	<script src='[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)'></script>
-	<link rel='stylesheet' href='assets/css/style.css'>
-</head>
-<body class='bg-gray-100'>
-	<!-- Content for components/post.html -->
-</body>
-</html>
+<div class="post bg-white rounded shadow-md p-4 mb-4">
+    <div class="post-header flex items-center mb-2">
+        <img src="" alt="Profile Picture" class="profile-picture w-8 h-8 rounded-full mr-2">
+        <div class="user-info">
+            <span class="username font-semibold"></span>
+            <p class="post-time text-gray-500 text-sm"></p>
+        </div>
+    </div>
+    <div class="post-content">
+        <p class="content text-gray-700"></p>
+		<img src="" alt="Post Image" class="post-image w-full rounded mt-2 hidden">
+    </div>
+    <div class="post-location mt-2 text-sm text-gray-600">
+        <i class="fas fa-map-marker-alt mr-1"></i>
+        <span class="location"></span>
+    </div>
+    <div class="post-actions mt-4 flex justify-between">
+        <button class="like-button text-blue-500 hover:text-blue-700 focus:outline-none">
+            <i class="fas fa-thumbs-up mr-1"></i>
+            <span class="like-count">0</span> Likes
+        </button>
+        <button class="comment-button text-green-500 hover:text-green-700 focus:outline-none">
+            <i class="fas fa-comment mr-1"></i>
+            Comments
+        </button>
+    </div>
+    <div class="post-comments mt-4">
+        <!-- Comments will be dynamically added here -->
+    </div>
+	<div class="add-comment mt-2">
+		<input type="text" class="comment-input w-full border rounded py-2 px-3" placeholder="Add a comment...">
+		<button class="post-comment-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-2 focus:outline-none">Post Comment</button>
+	</div>
+</div>
