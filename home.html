@@ -4,10 +4,138 @@
 	<meta charset='UTF-8'>
 	<meta name='viewport' content='width=device-width, initial-scale=1.0'>
 	<title>ChronoLink</title>
-	<script src='[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)'></script>
+	<script src='https://cdn.tailwindcss.com'></script>
 	<link rel='stylesheet' href='assets/css/style.css'>
 </head>
 <body class='bg-gray-100'>
-	<!-- Content for home.html -->
+	<div class='container mx-auto p-4'>
+		<!-- Navbar -->
+		<nav class='bg-white shadow-md rounded-md p-4 mb-4'>
+			<div class='flex justify-between items-center'>
+				<a href='#' class='text-2xl font-bold text-gray-800'>ChronoLink</a>
+				<div>
+					<a href='profile.html' class='mr-4 hover:text-gray-500'>Profile</a>
+					<a href='friends.html' class='mr-4 hover:text-gray-500'>Friends</a>
+					<a href='search.html' class='mr-4 hover:text-gray-500'>Search</a>
+					<button id='logoutBtn' class='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded'>Logout</button>
+				</div>
+			</div>
+		</nav>
+
+		<!-- Post Creation -->
+		<div class='bg-white shadow-md rounded-md p-4 mb-4'>
+			<h2 class='text-lg font-semibold mb-2'>Create a Post</h2>
+			<form id='createPostForm'>
+				<div class='mb-2'>
+					<label for='postContent' class='block text-gray-700 text-sm font-bold mb-2'>Content</label>
+					<textarea id='postContent' name='content' rows='3' class='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline' required></textarea>
+				</div>
+				<div class='mb-2'>
+					<label for='postImage' class='block text-gray-700 text-sm font-bold mb-2'>Image URL (Optional)</label>
+					<input type='text' id='postImage' name='image' class='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'>
+				</div>
+				<div class='mb-2'>
+					<label for='postLocation' class='block text-gray-700 text-sm font-bold mb-2'>Location (Optional)</label>
+					<input type='text' id='postLocation' name='location' class='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'>
+				</div>
+				<div class='mb-4'>
+					<label for='postTimestamp' class='block text-gray-700 text-sm font-bold mb-2'>Timestamp (YYYY-MM-DD HH:MM:SS)</label>
+					<input type='datetime-local' id='postTimestamp' name='timestamp' class='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline' required>
+				</div>
+				<button type='submit' class='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'>Post</button>
+			</form>
+		</div>
+
+		<!-- Posts Feed -->
+		<div id='postsFeed'>
+			<!-- Posts will be loaded here -->
+		</div>
+	</div>
+
+	<script src='assets/js/main.js'></script>
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			const createPostForm = document.getElementById('createPostForm');
+			const postsFeed = document.getElementById('postsFeed');
+			const logoutBtn = document.getElementById('logoutBtn');
+
+
+			// Logout functionality
+			logoutBtn.addEventListener('click', async (e) => {
+				e.preventDefault();
+				try {
+					const response = await fetch('api/logout.php');
+					if (response.ok) {
+						window.location.href = 'login.html';
+					} else {
+						console.error('Logout failed');
+					}
+				} catch (error) {
+					console.error('Error during logout:', error);
+				}
+			});
+
+			// Post Creation
+			createPostForm.addEventListener('submit', async (e) => {
+				e.preventDefault();
+
+				const content = document.getElementById('postContent').value;
+				const image = document.getElementById('postImage').value;
+				const location = document.getElementById('postLocation').value;
+				const timestamp = document.getElementById('postTimestamp').value;
+
+				const formData = new FormData();
+				formData.append('content', content);
+				formData.append('image', image);
+				formData.append('location', location);
+				formData.append('timestamp', timestamp);
+
+				try {
+					const response = await fetch('api/create_post.php', {
+						method: 'POST',
+						body: formData
+					});
+
+					if (response.ok) {
+						createPostForm.reset();
+						loadPosts(); // Reload posts after creating a new one
+					} else {
+						console.error('Post creation failed');
+					}
+				} catch (error) {
+					console.error('Error creating post:', error);
+				}
+			});
+
+			// Load Posts
+			const loadPosts = async () => {
+				try {
+					const response = await fetch('api/get_posts.php');
+					const posts = await response.json();
+
+					postsFeed.innerHTML = ''; // Clear existing posts
+
+					posts.forEach(post => {
+						const postElement = document.createElement('div');
+						postElement.classList.add('bg-white', 'shadow-md', 'rounded-md', 'p-4', 'mb-4');
+
+						postElement.innerHTML = `
+							<h3 class='text-lg font-semibold'>${post.username}</h3>
+							<p class='text-gray-600'>${post.content}</p>
+							${post.image ? `<img src="${post.image}" alt="Post Image" class="mt-2 rounded-md">` : ''}
+							${post.location ? `<p class='text-sm text-gray-500'>Location: ${post.location}</p>` : ''}
+							<p class='text-sm text-gray-500'>${post.created_at}</p>
+						`;
+						postsFeed.appendChild(postElement);
+					});
+				} catch (error) {
+					console.error('Error loading posts:', error);
+				}
+			};
+
+			// Initial load of posts
+			loadPosts();
+		});
+	</script>
 </body>
 </html>
